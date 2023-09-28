@@ -2,64 +2,67 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MiniPool<T>
+public class MiniPool<T> where T : MonoBehaviour
 {
-    private List<GameObject> list = new List<GameObject>();
-    private Dictionary<GameObject,T> dict = new Dictionary<GameObject,T>();
     GameObject prefab;
     Transform parent;
 
-    public void OnInit(GameObject prefab, Transform parent = null)
+    List<GameObject> miniPools = new List<GameObject>();
+    public Dictionary<GameObject, T> dict = new Dictionary<GameObject, T>();
+
+    public MiniPool(GameObject prefab, int amount, Transform parent)// chinh la preload luon
     {
         this.prefab = prefab;
         this.parent = parent;
+
+        for (int i = 0; i < amount; i++)
+        {
+            GameObject obj = GameObject.Instantiate(prefab, parent);
+            miniPools.Add(obj);
+            obj.SetActive(false);
+
+        }
     }
 
-    public T Spawn(Vector3 pos, Quaternion rot)
+    public T Spawn(Vector3 position, Quaternion rotation)
     {
-        GameObject go = null;
+        GameObject obj = null;
 
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 0; i < miniPools.Count; i++)
         {
-            if (!list[i].activeInHierarchy)
+            if (!miniPools[i].activeInHierarchy)
             {
-                go = list[i];
-                break;
+                obj = miniPools[i];
             }
         }
 
-        if (go == null)
+        if (obj == null)
         {
-            go = GameObject.Instantiate(prefab, parent);
-            list.Add(go);
-            dict.Add(go, go.GetComponent<T>());
+            obj = GameObject.Instantiate(prefab, parent);
         }
 
-        go.transform.SetPositionAndRotation(pos, rot);
-        go.SetActive(true);
+        obj.transform.SetPositionAndRotation(position, rotation);
+        obj.SetActive(true);
 
-        return dict[go];
+        if (!dict.ContainsKey(obj))
+        {
+            dict.Add(obj, obj.GetComponent<T>());
+            miniPools.Add(obj);
+        }
+
+        return dict[obj];
+    }
+
+    public void Despawn(GameObject obj)
+    {
+        obj.SetActive(false);
     }
 
     public void Collect()
     {
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 0; i < miniPools.Count; i++)
         {
-            if (list[i].activeInHierarchy)
-            {
-                list[i].SetActive(false);
-            }
+            miniPools[i].SetActive(false);
         }
     }
-
-    public void Release()
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            GameObject.Destroy(list[i]);
-        }
-
-        list.Clear();
-    }
-
 }

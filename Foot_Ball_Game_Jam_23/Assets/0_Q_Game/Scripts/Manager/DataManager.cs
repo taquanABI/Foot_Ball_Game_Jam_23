@@ -33,6 +33,7 @@ public class DataManager : MonoBehaviour
         else
         {
             playerData = new PlayerData();
+            playerData.level = 1;
         }
 
         //loadskin

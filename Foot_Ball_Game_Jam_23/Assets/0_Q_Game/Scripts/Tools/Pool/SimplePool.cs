@@ -1,364 +1,180 @@
-﻿///
-/// Simple pooling for Unity.
-///   Author: Martin "quill18" Glaude (quill18@quill18.com)
-///   Latest Version: https://gist.github.com/quill18/5a7cfffae68892621267
-///   License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
-///   UPDATES:
-/// 	2015-04-16: Changed Pool to use a Stack generic. 
-
-
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using System;
+using UnityEngine;
+
 
 public static class SimplePool
 {
-    const int DEFAULT_POOL_SIZE = 3;
+    static int DEFAULT_AMOUNT = 10;
+    //pool tong
+    static Dictionary<GameUnit, Pool> poolObjects = new Dictionary<GameUnit, Pool>();
 
-    static Dictionary<int, Pool> pools = new Dictionary<int, Pool>();
+    //tim pool cha cua thang object
+    static Dictionary<GameUnit, Pool> poolParents = new Dictionary<GameUnit, Pool>();
 
-    static Dictionary<PoolType, GameUnit> poolTypes = new Dictionary<PoolType, GameUnit>();
-
-    private static GameUnit[] gameUnitResources;
-
-    private static Transform root;
-
-    public static Transform Root
+    public static void Preload(GameUnit prefab, int amount, Transform parent)
     {
-        get
+        if (!poolObjects.ContainsKey(prefab))
         {
-            if (root == null)
-            {
-                root = GameObject.FindObjectOfType<PoolControler>().transform;
-
-                if (root == null)
-                {
-                    root = new GameObject("Pool").transform;
-                }
-            }
-
-            return root;
+            poolObjects.Add(prefab, new Pool(prefab, amount, parent));
         }
     }
 
-    class Pool
+    public static GameUnit Spawn(GameUnit prefab, Vector3 position, Quaternion rotation)
     {
-        Transform m_sRoot = null;
+        GameUnit obj = null;
 
-        bool m_collect;
+        if (!poolObjects.ContainsKey(prefab) || poolObjects[prefab] == null)
+        {
+            poolObjects.Add(prefab, new Pool(prefab, DEFAULT_AMOUNT, null));
+            Debug.Log(" Spawn    "  );
+        }
 
-        Queue<GameUnit> inactive;
+        obj = poolObjects[prefab].Spawn(position, rotation);
 
-        //collect obj active ingame
-        List<GameUnit> active;
 
-        // The prefab that we are pooling
+        if (obj == null)
+        {
+            Debug.Log(" obj == null    ");
+        }
+
+
+        return obj;
+    }
+
+    public static T Spawn<T>(GameUnit prefab, Vector3 position, Quaternion rotation) where T : GameUnit
+    {
+        GameUnit obj = null;
+
+        if (!poolObjects.ContainsKey(prefab) || poolObjects[prefab] == null)
+        {
+            poolObjects.Add(prefab, new Pool(prefab, DEFAULT_AMOUNT, null));
+        }
+
+        obj = poolObjects[prefab].Spawn(position, rotation);
+
+        return obj as T;
+    }
+
+    public static void Despawn(GameUnit obj)
+    {
+        if (poolParents.ContainsKey(obj))
+        {
+            poolParents[obj].Despawn(obj);
+        }
+        else
+        {
+            GameObject.Destroy(obj);
+        }
+    }
+
+    public static void CollectAll()
+    {
+        foreach (var item in poolObjects)
+        {
+            item.Value.Collect();
+        }
+    }
+
+    public static void ReleaseAll()
+    {
+        foreach (var item in poolObjects)
+        {
+            item.Value.Release();
+        }
+    }
+
+    public class Pool
+    {
+        Queue<GameUnit> pools = new Queue<GameUnit>();
+        List<GameUnit> activeObjs = new List<GameUnit>();
+        Transform parent;
         GameUnit prefab;
 
-        bool m_clamp;
-        int m_Amount;
-
-        public bool isCollect { get => m_collect; }
-
-        // Constructor
-        public Pool(GameUnit prefab, int initialQty, Transform parent, bool collect, bool clamp)
+        public Pool(GameUnit prefab, int amount, Transform parent)
         {
-            inactive = new Queue<GameUnit>(initialQty);
-            m_sRoot = parent;
             this.prefab = prefab;
-            m_collect = collect;
-            this.m_clamp = clamp;
-            if (m_collect) active = new List<GameUnit>();
-            if (m_clamp) m_Amount = initialQty;
-        }
-        public int Count {
-            get { return inactive.Count;}
-        }
-        // Spawn an object from our pool
-        public GameUnit Spawn(Vector3 pos, Quaternion rot)
-        {
-            GameUnit obj = Spawn();
+            this.parent = parent;
 
-            obj.tf.SetPositionAndRotation( pos, rot);
-
-            return obj;
-        }
-
-        public GameUnit Spawn()
-        {
-            GameUnit obj;
-            if (inactive.Count == 0)
+            for (int i = 0; i < amount; i++)
             {
-                obj = (GameUnit)GameObject.Instantiate(prefab, m_sRoot);
+                GameUnit obj = GameObject.Instantiate(prefab, parent);
+                poolParents.Add(obj, this);
+                pools.Enqueue(obj);
+                obj.gameObject.SetActive(false);
+            }
+        }
 
-                if (!pools.ContainsKey(obj.GetInstanceID()))
-                    pools.Add(obj.GetInstanceID(), this);
+        public GameUnit Spawn(Vector3 position, Quaternion rotation)
+        {
+            GameUnit obj = null;
+
+            if (pools.Count == 0)
+            {
+                obj = GameObject.Instantiate(prefab, parent);
+                poolParents.Add(obj, this);
             }
             else
             {
-                // Grab the last object in the inactive array
-                obj = inactive.Dequeue();
-
-                if (obj == null)
-                {
-                    return Spawn();
-                }
+                obj = pools.Dequeue();
             }
 
-            if (m_collect) active.Add(obj);
-            if (m_clamp && active.Count >= m_Amount) Despawn(active[0]);
-
+            obj.transform.SetPositionAndRotation(position, rotation);
             obj.gameObject.SetActive(true);
+
+            activeObjs.Add(obj);
 
             return obj;
         }
 
-        // Return an object to the inactive pool.
         public void Despawn(GameUnit obj)
         {
-            if (obj != null /*&& !inactive.Contains(obj)*/)
+            if (obj.gameObject.activeInHierarchy)
             {
+                activeObjs.Remove(obj);
+                pools.Enqueue(obj);
                 obj.gameObject.SetActive(false);
-                inactive.Enqueue(obj);
             }
-
-            if (m_collect) active.Remove(obj);
-        }
-
-        public void Clamp(int amount) {
-            while(inactive.Count> amount) {
-                GameUnit go = inactive.Dequeue();
-                GameObject.DestroyImmediate(go);
-            }
-        }
-        public void Release() {
-            while(inactive.Count>0) {
-                GameUnit go = inactive.Dequeue();
-                GameObject.DestroyImmediate(go);
-            }
-            inactive.Clear();
         }
 
         public void Collect()
         {
-            while (active.Count > 0)
+            while (activeObjs.Count > 0)
             {
-                Despawn(active[0]);
+                Despawn(activeObjs[0]);
             }
         }
-    }
 
-    // All of our pools
-    static Dictionary<int, Pool> poolInstanceID = new Dictionary<int, Pool>();
-
-    /// <summary>
-    /// Init our dictionary.
-    /// </summary>
-    static void Init(GameUnit prefab = null, int qty = DEFAULT_POOL_SIZE, Transform parent = null, bool collect = false, bool clamp = false)
-    {
-        if (prefab != null && !IsHasPool(prefab.GetInstanceID()))
+        public void Release()
         {
-            poolInstanceID.Add(prefab.GetInstanceID(), new Pool(prefab, qty, parent, collect, clamp));
-        }
-    }
+            Collect();
 
-    static public bool IsHasPool(int instanceID)
-    {
-        return poolInstanceID.ContainsKey(instanceID);
-    }
-
-
-    static public void Preload(GameUnit prefab, int qty = 1, Transform parent = null, bool collect = false, bool clamp = false)
-    {
-        if (!poolTypes.ContainsKey(prefab.poolType))
-        {
-            poolTypes.Add(prefab.poolType, prefab);
-        }
-
-        if (prefab == null)
-        {
-            Debug.LogError(parent.name + " : IS EMPTY!!!");
-            return;
-        }
-
-        Init(prefab, qty, parent, collect, clamp);
-
-        // Make an array to grab the objects we're about to pre-spawn.
-        GameUnit[] obs = new GameUnit[qty];
-        for (int i = 0; i < qty; i++)
-        {
-            obs[i] = Spawn(prefab);        
-        }
-
-        // Now despawn them all.
-        for (int i = 0; i < qty; i++)
-        {
-            Despawn(obs[i]);
-        }
-    }
-
-    static public T Spawn<T>(PoolType poolType, Vector3 pos, Quaternion rot) where T : GameUnit
-    {
-        return Spawn(GetGameUnitByType(poolType), pos, rot) as T;
-    }
-    
-    static public T Spawn<T>(PoolType poolType) where T : GameUnit
-    {
-        return Spawn<T>(GetGameUnitByType(poolType));
-    }
-
-    static public T Spawn<T>(GameUnit obj, Vector3 pos, Quaternion rot) where T : GameUnit
-    {
-        return Spawn(obj, pos, rot) as T;
-    }
-
-    static public T Spawn<T>(GameUnit obj) where T : GameUnit
-    {
-        return Spawn(obj) as T;
-    }
-
-    static public GameUnit Spawn(GameUnit obj, Vector3 pos, Quaternion rot)
-    {
-        if (!poolInstanceID.ContainsKey(obj.GetInstanceID()))
-        {
-            Transform newRoot = new GameObject(obj.name).transform;
-            newRoot.SetParent(Root);
-            Preload(obj, 1, newRoot, true, false);
-        }
-
-        return poolInstanceID[obj.GetInstanceID()].Spawn(pos, rot);
-    }
-
-    public static GameUnit Spawn(GameUnit obj)
-    {
-        if (!poolInstanceID.ContainsKey(obj.GetInstanceID()))
-        {
-            Transform newRoot = new GameObject(obj.name).transform;
-            newRoot.SetParent(Root);
-            Preload(obj, 1, newRoot, true, false);
-        }
-
-        return poolInstanceID[obj.GetInstanceID()].Spawn();
-    }
-
-    static public void Despawn(GameUnit obj)
-    {
-        if (obj.gameObject.activeSelf)
-        {
-            if (pools.ContainsKey(obj.GetInstanceID()))
-                pools[obj.GetInstanceID()].Despawn(obj);
-            else
-                GameObject.Destroy(obj.gameObject);    
-        }
-    }
-
-    static public void Release(GameUnit obj)
-    {
-        if (pools.ContainsKey(obj.GetInstanceID()))
-        {
-            pools[obj.GetInstanceID()].Release();
-            pools.Remove(obj.GetInstanceID());
-        }
-        else
-        {
-            GameObject.DestroyImmediate(obj);
-        }
-    }
-
-    static public void Collect(GameUnit obj)
-    {
-        if (poolInstanceID.ContainsKey(obj.GetInstanceID()))
-            poolInstanceID[obj.GetInstanceID()].Collect();
-    }
-
-    static public void CollectAll()
-    {
-        foreach (var item in poolInstanceID)
-        {
-            if (item.Value.isCollect)
+            while (pools.Count > 0)
             {
-                item.Value.Collect();
+                GameUnit obj = pools.Dequeue();
+                GameObject.DestroyImmediate(obj);
             }
         }
-    }
 
-    static GameUnit GetGameUnitByType(PoolType poolType)
+    }
+}
+
+public class GameUnit: MonoBehaviour
+{
+    private Transform Transforms;
+
+    public Transform tf
     {
-        if (gameUnitResources == null || gameUnitResources.Length == 0)
-        {
-            gameUnitResources = Resources.LoadAll<GameUnit>("Pools");
-        }
-
-        if (!poolTypes.ContainsKey(poolType) || poolTypes[poolType] == null)
-        {
-            GameUnit unit = null;
-
-            for (int i = 0; i < gameUnitResources.Length; i++)
-            {
-                if (gameUnitResources[i].poolType == poolType)
-                {
-                    unit = gameUnitResources[i];
-                    break;
-                }
-            }
-
-            poolTypes.Add(poolType, unit);
-        }
-
-        return poolTypes[poolType];
-    }
-}
-
-[System.Serializable]
-public class PoolAmount
-{
-    [Header("-- Pool Amount --")]
-    public Transform root;
-    public GameUnit prefab;
-    public int amount;
-    public bool collect;
-    public bool clamp;
-}
-
-public enum IngameType 
-{ 
-    PLAYER, 
-    ENEMY,
-    None,
-    HpBar,
-}
-
-
-public enum PoolType
-{
-    Minion_1,
-    Minion_2,
-    Minion_3,
-    Minion_4,
-    None,
-
-}
-
-
-public abstract class GameUnit: MonoBehaviour
-{
-    private Transform trans;
-    public Transform tf 
-    { 
         get
         {
-            if (trans == null)
+            if (this.Transforms == null)
             {
-                trans = gameObject.transform;
+                this.Transforms = transform;
             }
-            return trans;
+
+            return Transforms;
         }
+        
     }
-
-    public IngameType ID;
-    public PoolType poolType;
-
-    public abstract void OnInit();
-    public abstract void OnDespawn();
-
+    
 }

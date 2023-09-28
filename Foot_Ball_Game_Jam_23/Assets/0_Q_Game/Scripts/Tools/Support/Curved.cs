@@ -84,15 +84,15 @@ public class Curved : GameUnit// di chuyển theo parabal
 		return new Vector3(onCircle.x, y, onCircle.y);
     }
 
-    public override void OnInit()
-    {
-        throw new System.NotImplementedException();
-    }
+    //public override void OnInit()
+    //{
+    //    throw new System.NotImplementedException();
+    //}
 
-    public override void OnDespawn()
-    {
-        throw new System.NotImplementedException();
-    }
+    //public override void OnDespawn()
+    //{
+    //    throw new System.NotImplementedException();
+    //}
 
 
     //private void OnDrawGizmos()

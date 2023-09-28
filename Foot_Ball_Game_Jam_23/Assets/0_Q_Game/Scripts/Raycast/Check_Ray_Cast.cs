@@ -9,9 +9,11 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
     #region Khai báo biến
     public bool isRay_Cast_Draw;
     public bool isRay_Cast_Plan;
+    public bool isRay_Cast_Colider_Merge;
     public Camera cam;
     public Transform tf_Cam;
     public Plane_Drawn_Arrow plane_Drawn_Arrow;
+    public Colider_Merge colider_Merge;
 
     
 
@@ -118,6 +120,33 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
             }
         }
         return (true, Vector3.zero);
+    }
+    
+    public Colider_Merge Get_Raycast_Colider_Player()//mouse Up
+    {
+        //**** lấy từ Raycast
+        RaycastHit[] hits = new RaycastHit[6];//số phần tử bằng với hàm Get_Raycast()
+        hits = Get_Raycast();
+        for (int i = 0; i < hits.Length; i++)
+        {
+            //Debug.Log(hits[i].collider.gameObject.name);
+            if (hits[i].collider != null)
+            {
+                colider_Merge = Cache.Get_Colider_Merge(hits[i].collider);
+                //Floor
+                if (colider_Merge != null)
+                {
+                    isRay_Cast_Colider_Merge = true;
+                    return colider_Merge;
+                }
+            }
+            else
+            {
+                colider_Merge = null;
+                isRay_Cast_Colider_Merge = false;
+            }
+        }
+        return null;
     }
     
     

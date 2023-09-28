@@ -31,6 +31,21 @@ public class Cache
 
         return m_Plane_Drawn_Arrow[key];
     }
+    
+    //------------------------------------------------------------------------------------------------------------
+
+
+    private static Dictionary<Collider, Colider_Merge> m_Colider_Merge = new Dictionary<Collider, Colider_Merge>();
+
+    public static Colider_Merge Get_Colider_Merge(Collider key)
+    {
+        if (!m_Colider_Merge.ContainsKey(key))
+        {
+            m_Colider_Merge.Add(key, key.GetComponent<Colider_Merge>());
+        }
+
+        return m_Colider_Merge[key];
+    }
 
     //private static Dictionary<Collider, Character> m_Character = new Dictionary<Collider, Character>();
 

@@ -26,3 +26,67 @@ public class IngameManager : MonoBehaviour
         // ảnh 100 * 100: 
     }    
 }
+/*
+ 
+ Ball
+                list<Transform_Target>
+
+                Set_target(list_Transform_Target); 
+
+                Fly(); 
+                    Kiểm tra list_Player có rỗng ko
+                        di chuyển qua các pos từng Player trong list
+                            Remove Player ra khỏi list
+                
+                
+                Va chạm vs enemy
+                    Dừng lại
+                
+                
+                
+                
+                
+                
+ 
+            InGamePlay
+                Get_Pos_
+                list_Player_Will_Draw
+                
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ */
