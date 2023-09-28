@@ -147,7 +147,9 @@ public class Draw_Line_Control : MonoBehaviour
                         _line_White.UpdateTrajectory(v_start,v_end);
 
                         //đổi vị trí điểm đầu tiên của đường xanh lúc merge xong bắt đầu từ cầu thủ tiếp theo
-                        line_Drag.UpdateTrajectory(v_end, v_end);
+                        //line_Drag.UpdateTrajectory(v_end, v_end);
+
+                        vec_Poit_Start = v_end;
 
                         count_Point_Player++;
                     }
