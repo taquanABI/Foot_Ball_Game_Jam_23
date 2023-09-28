@@ -19,6 +19,7 @@ public class Player : Character
     protected override void Start()
     {
         base.Start();
+        StartCoroutine(IE_Regist_Manager());
     }
 
     // Update is called once per frame
@@ -28,4 +29,9 @@ public class Player : Character
 
     }
 
+    IEnumerator IE_Regist_Manager()
+    {
+        yield return new WaitUntil( ()=> IngameManager.ins != null );
+        IngameManager.ins.list_Player_Inlevel.Add(this);
+    }
 }

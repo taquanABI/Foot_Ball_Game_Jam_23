@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4249ce344bcf20a4690cdd0aefbaf945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tf: {fileID: 0}
   tf_Ball_In: {fileID: 0}
   force_Kick: 0
 --- !u!1 &4684258691281003812
@@ -56,9 +57,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4684258691281003835}
+  - component: {fileID: 3633877529446650}
+  - component: {fileID: 7150287406293225329}
   m_Layer: 0
   m_Name: Colider_Check
-  m_TagString: Untagged
+  m_TagString: enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,6 +82,36 @@ Transform:
   m_Father: {fileID: 4684258691223648207}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &3633877529446650
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4684258691281003812}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 1.0404631
+  m_Height: 2.8396873
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9198437, z: 0}
+--- !u!54 &7150287406293225329
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4684258691281003812}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &4684258691401061225
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,7 +241,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65522603144999413, guid: e3218f0ca83fbb3419ee2521cb9a91a4, type: 3}
+    - {fileID: 54178201887690584, guid: e3218f0ca83fbb3419ee2521cb9a91a4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e3218f0ca83fbb3419ee2521cb9a91a4, type: 3}
 --- !u!4 &4688160184011662765 stripped
 Transform:

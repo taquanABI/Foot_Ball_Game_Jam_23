@@ -46,6 +46,21 @@ public class Cache
 
         return m_Colider_Merge[key];
     }
+    
+    //------------------------------------------------------------------------------------------------------------
+
+
+    private static Dictionary<Collider, Goal> m_Colider_Goal = new Dictionary<Collider, Goal>();
+
+    public static Goal Get_Colider_Goal(Collider key)
+    {
+        if (!m_Colider_Goal.ContainsKey(key))
+        {
+            m_Colider_Goal.Add(key, key.GetComponent<Goal>());
+        }
+
+        return m_Colider_Goal[key];
+    }
 
     //private static Dictionary<Collider, Character> m_Character = new Dictionary<Collider, Character>();
 

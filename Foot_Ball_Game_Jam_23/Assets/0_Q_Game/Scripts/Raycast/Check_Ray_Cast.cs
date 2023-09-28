@@ -7,13 +7,18 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
 {
 
     #region Khai báo biến
+    public LayerMask layerMasks_Plan_Blue;
+    public LayerMask layerMasks_Player;
+    public LayerMask layerMasks_Goal;
     public bool isRay_Cast_Draw;
     public bool isRay_Cast_Plan;
     public bool isRay_Cast_Colider_Merge;
+    public bool isRay_Cast_Colider_Goal;
     public Camera cam;
     public Transform tf_Cam;
     public Plane_Drawn_Arrow plane_Drawn_Arrow;
     public Colider_Merge colider_Merge;
+    public Goal colider_Goal;
 
     
 
@@ -99,7 +104,7 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
     {
         //**** lấy từ Raycast
         RaycastHit[] hits = new RaycastHit[6];//số phần tử bằng với hàm Get_Raycast()
-        hits = Get_Raycast();
+        hits = Get_Raycast(layerMasks_Plan_Blue);
         for (int i = 0; i < hits.Length; i++)
         {
             //Debug.Log(hits[i].collider.gameObject.name);
@@ -126,7 +131,7 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
     {
         //**** lấy từ Raycast
         RaycastHit[] hits = new RaycastHit[6];//số phần tử bằng với hàm Get_Raycast()
-        hits = Get_Raycast();
+        hits = Get_Raycast(layerMasks_Player);
         for (int i = 0; i < hits.Length; i++)
         {
             //Debug.Log(hits[i].collider.gameObject.name);
@@ -149,6 +154,34 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
         return null;
     }
     
+    public Goal Get_Raycast_Colider_Goal()//mouse Up
+    {
+        //Debug.Log(" ZZZZZZZZZZZ ");
+        //**** lấy từ Raycast
+        RaycastHit[] hits = new RaycastHit[6];//số phần tử bằng với hàm Get_Raycast()
+        hits = Get_Raycast(layerMasks_Goal);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            //Debug.Log(hits[i].collider.gameObject.name);
+            if (hits[i].collider != null)
+            {
+                colider_Goal = Cache.Get_Colider_Goal(hits[i].collider);
+                //Floor
+                if (colider_Goal != null)
+                {
+                    isRay_Cast_Colider_Goal = true;
+                    return colider_Goal;
+                }
+            }
+            else
+            {
+                colider_Goal = null;
+                isRay_Cast_Colider_Goal = false;
+            }
+        }
+        return null;
+    }
+    
     
     
    
@@ -161,6 +194,16 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
         //nếu raycast vào gameObject
         int layerMask = 1 << 0;//TODO: dịch bit, (chon giá trị có thể Raycast của Layer index là 6) = 1 ở trong danh sách các layer (layerMask), (các layer còn lại trong layerMask có giá trị Raycast) = 0
         Physics.RaycastNonAlloc(ray, hits, 1000, layerMask);
+        return hits;
+    }
+    public RaycastHit[] Get_Raycast(LayerMask _layerMask)
+    {
+        var ray = cam.ScreenPointToRay(Input.mousePosition);
+
+        RaycastHit[] hits = new RaycastHit[6];
+        //nếu raycast vào gameObject
+        
+        Physics.RaycastNonAlloc(ray, hits, 1000, _layerMask);
         return hits;
     }
     #endregion

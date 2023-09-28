@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Draw_Line_Control : MonoBehaviour
+public class Draw_Line_Control : SingletonMonoBehaviour<Draw_Line_Control>
 {
     public bool isCanDraw;
     public bool is_Drawing;
+    [Tooltip("Colider của cầu thủ giữ bóng đầu tiên để vẽ từ đây, phải để 1 trong 3 Layer Default, Waeter thì Colider mới nhận function OnMouseEnter() ")]
+    public GameObject o_Colider_Player_Start_Draw;
 
     [Tooltip("đã sút bóng chưa")]
     public bool is_Kicked;
@@ -22,6 +24,7 @@ public class Draw_Line_Control : MonoBehaviour
 
     public Player player_Init;
     public List<Player> list_Player_Will_Draw;
+    public List<Player> list_Player_Check_Once_Pass;
     public List<Line> list_LineWhite_Draw;
     public Ball ball;
 
@@ -46,9 +49,12 @@ public class Draw_Line_Control : MonoBehaviour
         count_Point_Player_Max = GameConfig.ins.Get_max_Count_Point_Connect(_level);
 
         list_Player_Will_Draw.Add(player_Init);
+        list_Player_Check_Once_Pass.Add(player_Init);
 
         times_Drag = 0;
 
+        //Set có thể vẽ khi di chuột qua thằng đầu tiên giữ bóng
+        Set_Enable_Draw();
     }
     // Update is called once per frame
     void Update()
@@ -63,28 +69,23 @@ public class Draw_Line_Control : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (!isCanDraw && !is_Kicked)
+            if (!isCanDraw || is_Kicked)
             {
                 return;
             }
 
+
+
             
-
-            if (times_Drag < times_Can_Drag_Max)
-            {
-                line_Drag = (Line)(PoolController.Ins.miniPool_Line_Blue.Spawn(Vector3.zero, Quaternion.identity));
-
-
-                Vector3 v_start = new Vector3(player_Init.tf.position.x, tf_Plan_White_Line.position.y, player_Init.tf.position.z);
-
-
-                line_Drag.UpdateTrajectory(v_start, v_start);
-            }
         }
         
 
         if (Input.GetMouseButton(0))
         {
+            if (!isCanDraw || is_Kicked)
+            {
+                return;
+            }
             if (times_Drag < times_Can_Drag_Max)
             {
                 this.GetMouseDrag();
@@ -93,6 +94,10 @@ public class Draw_Line_Control : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
+            if (!isCanDraw || is_Kicked)
+            {
+                return;
+            }
             if (is_Drawing)
             {
                 times_Drag++;
@@ -103,8 +108,42 @@ public class Draw_Line_Control : MonoBehaviour
             }
         }
     }
+
+
+
+    /// <summary>
+    /// Set có thể vẽ khi di chuột qua thằng đầu tiên giữ bóng
+    /// </summary>
+    /// <param name="myBool">Parameter value to pass.</param>
+    /// <returns>Returns an integer based on the passed value.</returns>
+
+    public void Set_Enable_Draw()
+    {
+        Debug.Log("Set start enable draw");
+        o_Colider_Player_Start_Draw.SetActive(true);
+    }
+    
+    public void Set_Start_Draw()
+    {
+        if (times_Drag < times_Can_Drag_Max)
+        {
+            line_Drag = (Line)(PoolController.Ins.miniPool_Line_Blue.Spawn(Vector3.zero, Quaternion.identity));
+
+
+            Vector3 v_start = new Vector3(player_Init.tf.position.x, tf_Plan_White_Line.position.y, player_Init.tf.position.z);
+
+
+            line_Drag.UpdateTrajectory(v_start, v_start);
+        }
+        isCanDraw = true;
+    }
+
     private void GetMouseDrag()
     {
+        if (!isCanDraw && is_Kicked)
+        {
+            return;
+        }
         is_Drawing = true;
         var output = Check_Ray_Cast.Ins.Get_Pos_Raycast_Hit_Plan();
         if (output.Item1)
@@ -124,11 +163,14 @@ public class Draw_Line_Control : MonoBehaviour
                 if (colider_Player.player != list_Player_Will_Draw[list_Player_Will_Draw.Count - 1])
                 {
                     //nếu tay di vào player khác player vừa nối
-                    if (count_Point_Player < count_Point_Player_Max)
+                    if (count_Point_Player < count_Point_Player_Max - 1)// vì count_Point_Player bắt đầu từ 0 nên đến count_Point_Player_Max - 1 là đủ count_Point_Player_Max điểm
                     {
                         // thêm Player vào list các target .. tạo mới Line trắng qua 2 cầu thủ vừa rồi
                         list_Player_Will_Draw.Add(colider_Player.player);
-
+                        if (!list_Player_Check_Once_Pass.Contains(colider_Player.player))
+                        {
+                            list_Player_Check_Once_Pass.Add(colider_Player.player);
+                        }
                         Line _line_White = (Line)(PoolController.Ins.miniPool_Line_White.Spawn(Vector3.zero, Quaternion.identity));
 
                         list_LineWhite_Draw.Add(_line_White);
@@ -162,13 +204,49 @@ public class Draw_Line_Control : MonoBehaviour
             }
         }
 
+
+
+        var colider_Goal = Check_Ray_Cast.Ins.Get_Raycast_Colider_Goal();
+        if (colider_Goal != null)
+        {
+            //TODO: Kết thúc vẽ Line
+            
+            Line _line_White = (Line)(PoolController.Ins.miniPool_Line_White.Spawn(Vector3.zero, Quaternion.identity));
+
+            list_LineWhite_Draw.Add(_line_White);
+
+
+
+
+            int total = list_Player_Will_Draw.Count;
+
+            Vector3 v_start = new Vector3(list_Player_Will_Draw[total - 1].tf.position.x, tf_Plan_White_Line.position.y, list_Player_Will_Draw[total - 1].tf.position.z);
+
+
+            Vector3 v_end = new Vector3(colider_Goal.tf_Target.position.x, tf_Plan_White_Line.position.y, colider_Goal.tf_Target.position.z);
+
+
+            _line_White.UpdateTrajectory(v_start, v_end);
+
+            ball.Set_Target_Goal(colider_Goal);
+
+            //đổi vị trí điểm đầu tiên của đường xanh lúc merge xong bắt đầu từ cầu thủ tiếp theo
+            //line_Drag.UpdateTrajectory(v_end, v_end);
+
+            vec_Poit_Start = v_end;
+
+            count_Point_Player++;
+            Set_Done_Draw();
+            
+        }
     }
 
     public void Set_Done_Draw()
     {
         //TODO: Camera move góc chéo
         is_Kicked = true;
-        Timer.Schedule(this, 0, () =>
+        line_Drag.gameObject.SetActive(false);
+        Timer.Schedule(this, 0.7f, () =>
         {
             Set_Kick_Ball();
         });
@@ -177,6 +255,14 @@ public class Draw_Line_Control : MonoBehaviour
     
     public void Set_Kick_Ball()
     {
+        for (int i = 0; i < list_LineWhite_Draw.Count; i++)
+        {
+            if (list_LineWhite_Draw[i] != null)
+            {
+                list_LineWhite_Draw[i].gameObject.SetActive(false);
+            }
+        }
+
         ball.Set_List_Target_Move(list_Player_Will_Draw);
         ball.Set_Move();
     }

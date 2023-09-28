@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IngameManager : MonoBehaviour
+public class IngameManager : SingletonMonoBehaviour<IngameManager>
 {
+    public List<Player> list_Player_Inlevel;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,6 +15,24 @@ public class IngameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void Set_Level_Win()
+    {
+        Timer.Schedule(this, 1, () =>
+        {
+            //TODO: Hiện encard win sau khi Win ở chỗ này
+            Debug.Log(" Show win ");
+        });
+    }
+    
+    public void Set_Level_Fail()
+    {
+        Timer.Schedule(this, 1, () =>
+        {
+            //TODO: Hiện encard fail sau khi fail ở chỗ này
+            Debug.Log(" Show fail ");
+        });
     }
 
     private void LoadLevel()
