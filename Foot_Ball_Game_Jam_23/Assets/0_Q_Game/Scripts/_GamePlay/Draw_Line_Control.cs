@@ -223,7 +223,7 @@ public class Draw_Line_Control : SingletonMonoBehaviour<Draw_Line_Control>
             Vector3 v_start = new Vector3(list_Player_Will_Draw[total - 1].tf.position.x, tf_Plan_White_Line.position.y, list_Player_Will_Draw[total - 1].tf.position.z);
 
 
-            Vector3 v_end = new Vector3(colider_Goal.tf_Target.position.x, tf_Plan_White_Line.position.y, colider_Goal.tf_Target.position.z);
+            Vector3 v_end = new Vector3(colider_Goal.tf_Target_Win.position.x, tf_Plan_White_Line.position.y, colider_Goal.tf_Target_Win.position.z);
 
 
             _line_White.UpdateTrajectory(v_start, v_end);

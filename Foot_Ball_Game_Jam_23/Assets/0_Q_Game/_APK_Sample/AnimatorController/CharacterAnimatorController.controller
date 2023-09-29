@@ -14,91 +14,91 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: pass
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: dance_samba
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: dance_macarena
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: dance_gangman
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: sidestep_right
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: sidestep_left
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: jog_strafe_left
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: jog_strafe_right
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: jog_backward
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: cheering
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_DefaultBool: 1
+    m_Controller: {fileID: 0}
   - m_Name: cheering2
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: clapping
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: sitting_clap
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: standing_cheering
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -495,7 +495,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SoccerPassAnimation
-  m_Speed: 0.1
+  m_Speed: 5
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -914,7 +914,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 1102456033689681990}
-    m_Position: {x: -130, y: -20, z: 0}
+    m_Position: {x: -180, y: -30, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102695860140807208}
     m_Position: {x: 250, y: 0, z: 0}
@@ -929,16 +929,16 @@ AnimatorStateMachine:
     m_Position: {x: 0, y: 250, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102987292250112965}
-    m_Position: {x: 250, y: 250, z: 0}
+    m_Position: {x: 380, y: -460, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102660282929629614}
-    m_Position: {x: 500, y: 250, z: 0}
+    m_Position: {x: 550, y: 210, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102436202280862861}
     m_Position: {x: 750, y: 250, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102771090343272634}
-    m_Position: {x: 0, y: 500, z: 0}
+    m_Position: {x: -40, y: 560, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102095910278459687}
     m_Position: {x: 250, y: 500, z: 0}
@@ -950,7 +950,7 @@ AnimatorStateMachine:
     m_Position: {x: 750, y: 500, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102710348304970500}
-    m_Position: {x: 0, y: 750, z: 0}
+    m_Position: {x: -120, y: 740, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102753592340908103}
     m_Position: {x: 250, y: 750, z: 0}
@@ -959,7 +959,7 @@ AnimatorStateMachine:
     m_Position: {x: 500, y: 750, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102333674880013061}
-    m_Position: {x: 750, y: 750, z: 0}
+    m_Position: {x: 760, y: 740, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 1101628662349146906}

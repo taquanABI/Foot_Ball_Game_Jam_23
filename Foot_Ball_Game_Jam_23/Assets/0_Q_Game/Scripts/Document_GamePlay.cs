@@ -7,7 +7,38 @@ public class Document_GamePlay : MonoBehaviour
     
 }
 /*
-            Draw_Line_Control
+           
+ Reload lại scence khi vào level  mới
+ Tạo prefab init cho từng level
+
+Giới hạn góc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Draw_Line_Control
                 int count_Point_Connect_Max;
 
                 int count_Point_Connect

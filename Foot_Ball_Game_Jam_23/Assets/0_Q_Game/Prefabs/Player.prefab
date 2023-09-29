@@ -198,6 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tf: {fileID: 0}
+  anim: {fileID: 1423156734395740546}
   tf_Ball_In: {fileID: 1338569490467431861}
   force_Kick: 10
 --- !u!1 &8205099819616020031
@@ -312,6 +313,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -0
       objectReference: {fileID: 0}
+    - target: {fileID: 95591945506142458, guid: 22fc6ef77db4de341841d55550f9f6f7, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 65983481304513478, guid: 22fc6ef77db4de341841d55550f9f6f7, type: 3}
     - {fileID: 54617015951494180, guid: 22fc6ef77db4de341841d55550f9f6f7, type: 3}
@@ -319,5 +324,10 @@ PrefabInstance:
 --- !u!4 &1333980297567344898 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4729957352460410, guid: 22fc6ef77db4de341841d55550f9f6f7, type: 3}
+  m_PrefabInstance: {fileID: 1338569491601475960}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1423156734395740546 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95591945506142458, guid: 22fc6ef77db4de341841d55550f9f6f7, type: 3}
   m_PrefabInstance: {fileID: 1338569491601475960}
   m_PrefabAsset: {fileID: 0}

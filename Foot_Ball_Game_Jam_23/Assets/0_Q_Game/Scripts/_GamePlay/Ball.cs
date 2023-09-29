@@ -18,12 +18,14 @@ public class Ball : MonoBehaviour
 
     Sequence sequence_Move_Ball;
 
+    [Tooltip("Khai báo trước mới dừng Coroutine lại được")]
+    Coroutine ie_Move;
+
     private void Awake()
     {
         tf = transform;
         // Create a sequence of Tweens
         sequence_Move_Ball = DOTween.Sequence();
-
     }
     // Start is called before the first frame update
     void Start()
@@ -44,47 +46,86 @@ public class Ball : MonoBehaviour
 
     public void Set_Move()
     {
-        StartCoroutine(IE_Set_Move());
-
+        ie_Move = StartCoroutine(IE_Set_Move());
     }
     public IEnumerator IE_Set_Move()
     {
+        if (list_Player_Target.Count > 1)
+        {
+            list_Player_Target[0].Rot_To_Target(list_Player_Target[1].tf);
+        }
         for (int i = 0; i < list_Player_Target.Count; i++)
         {
             //if (isStoped_By_Enemy)// Lệnh này méo dừng quả bóng lại đc, lại phải if (!isStoped_By_Enemy) ở bên dưới
             //{
             //    Set_Cancel_Move();
             //}
-            //int zz = i;
+            //int zz = i;//cake value
+
+            if (list_Player_Target.Count > 1 && (i < list_Player_Target.Count -1) && (i > 0))
+            {
+                list_Player_Target[i - 1].Rot_To_Target(list_Player_Target[i].tf);
+            }
+            else if (list_Player_Target.Count == 1)
+            {
+                list_Player_Target[0].Rot_To_Target(list_Player_Target[1].tf);
+            }
+
+            yield return Cache.GetWFS(Constants.Cons_Value.time_Rote_Character);
+
+            list_Player_Target[i].Set_Anim(Constants.anim_str.pass);
+
+            yield return Cache.GetWFS(Constants.Cons_Value.time_anim_Character_Kick);
+
+            list_Player_Target[i].Set_Anim(Constants.anim_str.idle);
+
             float distance = Vector3.Distance(tf.position, list_Player_Target[i].tf_Ball_In.position);
 
             force_Kick = list_Player_Target[i].force_Kick;
 
             float time_Move_Each_Point = distance / force_Kick;
-            if (!isStoped_By_Enemy)
-            {
-                var temp = tf.DOMove(list_Player_Target[i].tf_Ball_In.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick " + i.ToString()));
-            
-                yield return temp.WaitForCompletion();
-            }
+            var temp = tf.DOMove(list_Player_Target[i].tf_Ball_In.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick " + i.ToString()));
+
+            yield return temp.WaitForCompletion();
         }
         if (goal_Reach != null)
         {
-            //if (isStoped_By_Enemy)// Lệnh này méo dừng quả bóng lại đc, lại phải if (!isStoped_By_Enemy) ở bên dưới
-            //{
-            //    Set_Cancel_Move();
-            //}
-            if (!isStoped_By_Enemy)
+
+            
+
+            if (Get_Is_Pass_All_Player())
             {
-                float distance = Vector3.Distance(tf.position, goal_Reach.tf_Target.position);
+                list_Player_Target[list_Player_Target.Count - 1].Rot_To_Target(goal_Reach.tf_Target_Win);
+
+                yield return Cache.GetWFS(Constants.Cons_Value.time_Rote_Character);
+
+                float distance = Vector3.Distance(tf.position, goal_Reach.tf_Target_Win.position);
 
                 force_Kick = list_Player_Target[list_Player_Target.Count - 1].force_Kick;
 
-                float time_Move_Each_Point = distance / force_Kick / 3 ;
+                float time_Move_Each_Point = distance / force_Kick / 3;
 
-                var temp = tf.DOMove(goal_Reach.tf_Target.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick gold" ));
+                var temp = tf.DOMove(goal_Reach.tf_Target_Win.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick on gold"));
 
                 yield return temp.WaitForCompletion();
+
+            }
+            else
+            {
+                list_Player_Target[list_Player_Target.Count - 1].Rot_To_Target(goal_Reach.tf_Target_Fail);
+
+                yield return Cache.GetWFS(Constants.Cons_Value.time_Rote_Character);
+
+                float distance = Vector3.Distance(tf.position, goal_Reach.tf_Target_Fail.position);
+
+                force_Kick = list_Player_Target[list_Player_Target.Count - 1].force_Kick;
+
+                float time_Move_Each_Point = distance / force_Kick / 3;
+
+                var temp = tf.DOMove(goal_Reach.tf_Target_Fail.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick out gold"));
+
+                yield return temp.WaitForCompletion();
+
             }
 
         }
@@ -100,7 +141,7 @@ public class Ball : MonoBehaviour
     {
         Debug.Log(" Complete Kick ");
         colider_Ball.rig.isKinematic = false;
-        bool isPass_All_Player = Draw_Line_Control.ins.list_Player_Check_Once_Pass.Count == IngameManager.ins.list_Player_Inlevel.Count;
+        bool isPass_All_Player = Get_Is_Pass_All_Player();
 
         bool reach_Goal = (goal_Reach != null);
 
@@ -113,6 +154,12 @@ public class Ball : MonoBehaviour
             IngameManager.ins.Set_Level_Fail();
         }
     }
+
+    public bool Get_Is_Pass_All_Player()
+    {
+        return Draw_Line_Control.ins.list_Player_Check_Once_Pass.Count == IngameManager.ins.list_Player_Inlevel.Count;
+    }
+
     public void Set_List_Target_Move(List<Player> _list_Player_Target)
     {
         //list_Player_Target = _list_Player_Target; // reference
@@ -134,6 +181,7 @@ public class Ball : MonoBehaviour
 
         tf.DOKill();
 
+        Set_Cancel_Move();
         //StopCoroutine(IE_Set_Move()); // Lệnh này méo dừng quả bóng lại đc, lại phải if (!isStoped_By_Enemy) 
 
         IngameManager.ins.Set_Level_Fail();
@@ -144,7 +192,7 @@ public class Ball : MonoBehaviour
     public void Set_Cancel_Move()
     {
         tf.DOKill();
-        StopCoroutine(IE_Set_Move());
+        StopCoroutine(ie_Move);
     }
 }
 /*
@@ -173,4 +221,85 @@ public class Ball : MonoBehaviour
         sequence_Move_Ball.Play();
 
     }
+
+
+
+
+
+public IEnumerator IE_Set_Move()
+    {
+        for (int i = 0; i < list_Player_Target.Count; i++)
+        {
+            //if (isStoped_By_Enemy)// Lệnh này méo dừng quả bóng lại đc, lại phải if (!isStoped_By_Enemy) ở bên dưới
+            //{
+            //    Set_Cancel_Move();
+            //}
+            //int zz = i;
+            float distance = Vector3.Distance(tf.position, list_Player_Target[i].tf_Ball_In.position);
+
+            force_Kick = list_Player_Target[i].force_Kick;
+
+            float time_Move_Each_Point = distance / force_Kick;
+            if (!isStoped_By_Enemy)
+            {
+                var temp = tf.DOMove(list_Player_Target[i].tf_Ball_In.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick " + i.ToString()));
+            
+                yield return temp.WaitForCompletion();
+            }
+        }
+        if (goal_Reach != null)
+        {
+            //if (isStoped_By_Enemy)// Lệnh này méo dừng quả bóng lại đc, lại phải if (!isStoped_By_Enemy) ở bên dưới
+            //{
+            //    Set_Cancel_Move();
+            //}
+            if (!isStoped_By_Enemy)
+            {
+                if (Get_Is_Pass_All_Player())
+                {
+                    float distance = Vector3.Distance(tf.position, goal_Reach.tf_Target_Win.position);
+
+                    force_Kick = list_Player_Target[list_Player_Target.Count - 1].force_Kick;
+
+                    float time_Move_Each_Point = distance / force_Kick / 3 ;
+
+                    var temp = tf.DOMove(goal_Reach.tf_Target_Win.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick on gold" ));
+
+                    yield return temp.WaitForCompletion();
+
+                }
+                else
+                {
+                    float distance = Vector3.Distance(tf.position, goal_Reach.tf_Target_Fail.position);
+
+                    force_Kick = list_Player_Target[list_Player_Target.Count - 1].force_Kick;
+
+                    float time_Move_Each_Point = distance / force_Kick / 3 ;
+
+                    var temp = tf.DOMove(goal_Reach.tf_Target_Fail.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick out gold" ));
+
+                    yield return temp.WaitForCompletion();
+
+                }
+            }
+
+        }
+
+        //TODO: complete Ball move
+        if (!isStoped_By_Enemy)
+        {
+            Set_Complete_Move();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
  */

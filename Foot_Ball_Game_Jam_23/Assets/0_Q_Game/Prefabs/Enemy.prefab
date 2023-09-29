@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tf: {fileID: 0}
+  anim: {fileID: 4635078564141265809}
   tf_Ball_In: {fileID: 0}
   force_Kick: 0
 --- !u!1 &4684258691281003812
@@ -248,5 +249,10 @@ PrefabInstance:
 --- !u!4 &4688160184011662765 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4051353273927879, guid: e3218f0ca83fbb3419ee2521cb9a91a4, type: 3}
+  m_PrefabInstance: {fileID: 4684258690761862506}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &4635078564141265809 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95366224708329211, guid: e3218f0ca83fbb3419ee2521cb9a91a4, type: 3}
   m_PrefabInstance: {fileID: 4684258690761862506}
   m_PrefabAsset: {fileID: 0}
