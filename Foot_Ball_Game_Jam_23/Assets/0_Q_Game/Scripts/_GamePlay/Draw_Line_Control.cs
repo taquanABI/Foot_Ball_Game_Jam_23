@@ -4,34 +4,34 @@ using UnityEngine;
 
 public class Draw_Line_Control : SingletonMonoBehaviour<Draw_Line_Control>
 {
-    public bool isCanDraw;
-    public bool is_Drawing;
+    [HideInInspector] public bool isCanDraw;
+    [HideInInspector] public bool is_Drawing;
     [Tooltip("Colider của cầu thủ giữ bóng đầu tiên để vẽ từ đây, phải để 1 trong 3 Layer Default, Waeter thì Colider mới nhận function OnMouseEnter() ")]
-    public GameObject o_Colider_Player_Start_Draw;
+    [HideInInspector] public GameObject o_Colider_Player_Start_Draw;
 
     [Tooltip("đã sút bóng chưa")]
-    public bool is_Kicked;
-    public int count_Point_Player;
-    public int count_Point_Player_Max;
+    [HideInInspector] public bool is_Kicked;
+    [HideInInspector] public int count_Point_Player;
+    [HideInInspector] public int count_Point_Player_Max;
 
     [HideInInspector] public Line line_Drag;
     //public Line line_conected;
 
-    public Vector3 vec_Poit_Start;
-    public Transform tf_Start_Drawn;
+    [HideInInspector] public Vector3 vec_Poit_Start;
+    [HideInInspector] public Transform tf_Start_Drawn;
     public Transform tf_Plan;
     public Transform tf_Plan_White_Line;
 
-    public Player player_Init;
-    public List<Player> list_Player_Will_Draw;
-    public List<Player> list_Player_Check_Once_Pass;
-    public List<Line> list_LineWhite_Draw;
-    public Ball ball;
+    [HideInInspector] public Player player_Init;
+    [HideInInspector] public List<Player> list_Player_Will_Draw;
+    /*[HideInInspector] */public List<Player> list_Player_Check_Once_Pass;
+    [HideInInspector] public List<Line> list_LineWhite_Draw;
+    [HideInInspector] public Ball ball;
 
     [Tooltip("số lần vẽ")]
-    public int times_Drag;
+    [HideInInspector] public int times_Drag;
     [Tooltip("số lần được vẽ")]
-    public int times_Can_Drag_Max;
+    [HideInInspector] public int times_Can_Drag_Max;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,23 +39,32 @@ public class Draw_Line_Control : SingletonMonoBehaviour<Draw_Line_Control>
     }
     public void On_Init()
     {
-        vec_Poit_Start = tf_Start_Drawn.position;
-        Set_Point_Start(tf_Start_Drawn);
+        list_Player_Will_Draw.Clear();
+        list_Player_Check_Once_Pass.Clear();
+        //vec_Poit_Start = tf_Start_Drawn.position;
 
-        
+
 
         int _level = DataManager.ins.playerData.level;
 
         count_Point_Player_Max = GameConfig.ins.Get_max_Count_Point_Connect(_level);
 
-        list_Player_Will_Draw.Add(player_Init);
-        list_Player_Check_Once_Pass.Add(player_Init);
+        
 
         times_Drag = 0;
+        times_Can_Drag_Max = 1;
 
         //Set có thể vẽ khi di chuột qua thằng đầu tiên giữ bóng
         Set_Enable_Draw();
     }
+
+    public void Set_Init_List(Player _player_Init)
+    {
+        player_Init = _player_Init;
+        list_Player_Will_Draw.Add(_player_Init);
+        list_Player_Check_Once_Pass.Add(_player_Init);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -120,7 +129,7 @@ public class Draw_Line_Control : SingletonMonoBehaviour<Draw_Line_Control>
     public void Set_Enable_Draw()
     {
         Debug.Log("Set start enable draw");
-        o_Colider_Player_Start_Draw.SetActive(true);
+        //o_Colider_Player_Start_Draw.SetActive(true);
     }
     
     public void Set_Start_Draw()

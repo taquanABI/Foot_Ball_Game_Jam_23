@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class IngameManager : SingletonMonoBehaviour<IngameManager>
 {
-    public List<Player> list_Player_Inlevel;
+    /*[HideInInspector] */public List<Player> list_Player_Inlevel;
+    [HideInInspector] public GameObject o_Arrow_Tut;
+    protected override void Awake()
+    {
+        base.Awake();
+
+    }
     // Start is called before the first frame update
     void Start()
     {
-        LoadLevel();
+        On_Init();
     }
 
     // Update is called once per frame
@@ -16,6 +22,18 @@ public class IngameManager : SingletonMonoBehaviour<IngameManager>
     {
         
     }
+
+    public void On_Init()
+    {
+        LoadLevel();
+    }
+    
+
+    public void Set_off_Tut()
+    {
+        o_Arrow_Tut.SetActive(false);
+    }
+
 
     public void Set_Level_Win()
     {
@@ -37,6 +55,7 @@ public class IngameManager : SingletonMonoBehaviour<IngameManager>
 
     private void LoadLevel()
     {
+        Instantiate(GameConfig.ins.list_Level[DataManager.ins.playerData.level - 1]);
         Timer.Schedule(this, 1, () =>
         {
 

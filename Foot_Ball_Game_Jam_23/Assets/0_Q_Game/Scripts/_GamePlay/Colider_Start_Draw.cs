@@ -18,5 +18,7 @@ public class Colider_Start_Draw : MonoBehaviour
 
         //bắt đầu vẽ
         Draw_Line_Control.ins.Set_Start_Draw();
+        IngameManager.ins.Set_off_Tut();
+        //Draw_Line_Control.ins.Set_Point_Start();
     }
 }

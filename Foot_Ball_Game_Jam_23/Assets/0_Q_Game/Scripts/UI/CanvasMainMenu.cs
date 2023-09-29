@@ -6,8 +6,8 @@ public class CanvasMainMenu : UICanvas
 {
     public void PlayGameButton()
     {
-        UIManager.ins.OpenUI(UIID.UICGamePlay);
-
+        
+        GameManager.ins.Load_Game_Play();
         Close();
     }
 }

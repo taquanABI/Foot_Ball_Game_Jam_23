@@ -30,7 +30,7 @@ public class Ball : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        On_Init();
     }
 
     // Update is called once per frame
@@ -41,7 +41,13 @@ public class Ball : MonoBehaviour
 
     public void On_Init()
     {
-
+        StartCoroutine(IE_Regist_Manager());
+    }
+    IEnumerator IE_Regist_Manager()
+    {
+        yield return new WaitUntil(() => Draw_Line_Control.ins != null);
+        Draw_Line_Control.ins.ball = (this);
+        Draw_Line_Control.ins.Set_Point_Start(tf);
     }
 
     public void Set_Move()
@@ -73,7 +79,7 @@ public class Ball : MonoBehaviour
 
             yield return Cache.GetWFS(Constants.Cons_Value.time_Rote_Character);
 
-            list_Player_Target[i].Set_Anim(Constants.anim_str.pass);
+            list_Player_Target[i].Set_Anim(Constants.anim_str.kick);
 
             yield return Cache.GetWFS(Constants.Cons_Value.time_anim_Character_Kick);
 
@@ -87,6 +93,9 @@ public class Ball : MonoBehaviour
             var temp = tf.DOMove(list_Player_Target[i].tf_Ball_In.position, time_Move_Each_Point).SetEase(Ease.OutQuad).OnComplete(() => Debug.Log(" Kick " + i.ToString()));
 
             yield return temp.WaitForCompletion();
+
+            list_Player_Target[i].Set_Anim(Constants.anim_str.take_ball);
+            //yield return Cache.GetWFS(Constants.Cons_Value.time_Rote_Character);
         }
         if (goal_Reach != null)
         {

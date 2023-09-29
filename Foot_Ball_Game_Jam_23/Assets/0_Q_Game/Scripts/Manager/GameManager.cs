@@ -9,8 +9,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     
     private static GameState gameState = GameState.MainMenu;
     
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         Input.multiTouchEnabled = false;
         Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -56,17 +57,17 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
         //SoundManager.PlayMusicBg(SoundManager.ins.bgMusic);
 
-        LoadingScreen.ins.SetPercent(0.35f, 1f);
+        LoadingScreen.ins.SetPercent(0.35f, .3f);
         DataManager.ins.LoadData();
         //StartCoroutine(CountTime());
         yield return Cache.GetWFS(1f);
 
-        LoadingScreen.ins.SetPercent(0.45f, 1f);
+        LoadingScreen.ins.SetPercent(0.45f, .3f);
         yield return Cache.GetWFS(1f);
 
         // làm 1 cái j đấy
 
-        LoadingScreen.ins.SetPercent(0.7f, 3f);
+        LoadingScreen.ins.SetPercent(0.7f, .3f);
         yield return Cache.GetWFS(1f);
 
         // if (GameManager.ins.data.charUsed == CharacterType.None)
@@ -84,11 +85,20 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
         yield return Cache.GetWFS(1f);
 
-        var sync = SceneManager.LoadSceneAsync("GamePlay");
+        var sync = SceneManager.LoadSceneAsync("Home");
 
         yield return new WaitUntil(() => sync.isDone);
 
         LoadingScreen.ins.SetPercent(1f, 0.5f);
+
+        yield return Cache.GetWFS(0.5f);
+
+
+        LoadingScreen.ins.gameObject.SetActive(false);
+
+
+
+        UIManager.ins.OpenUI(UIID.UICMainMenu);
 
         // yield return new WaitUntil(() =>
         //     PlayerController.ins != null
@@ -100,6 +110,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         // DataManager.ins.playerData.gold = 200;
         // DataManager.ins.playerData.pet_id = 200;
 
+
+
         DataManager.ins.SaveData();  // lưu lại data
 
         // UIManager.ins.OpenUI(UIID.UICVictory);  // bật  victory
@@ -108,5 +120,17 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         //yield return new WaitUntil
 
         
+    }
+
+    public void Load_Game_Play()
+    {
+        StartCoroutine(ie_Load_Game_Play());
+    }
+    IEnumerator ie_Load_Game_Play()
+    {
+        var sync = SceneManager.LoadSceneAsync("GamePlay");
+
+        yield return new WaitUntil(() => sync.isDone);
+
     }
 }

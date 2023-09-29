@@ -26,7 +26,7 @@ public class ChangeScene : Editor {
     
     private static void OpenScene (string sceneName) {
 		if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo ()) {
-			EditorSceneManager.OpenScene ("Assets/0_Game/Scenes/" + sceneName + ".unity");
+			EditorSceneManager.OpenScene ("Assets/0_Q_Game/Scenes/" + sceneName + ".unity");
 		}
 	}
 }

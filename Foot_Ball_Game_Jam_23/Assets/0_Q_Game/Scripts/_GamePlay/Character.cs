@@ -5,7 +5,8 @@ using DG.Tweening;
 
 public class Character : MonoBehaviour
 {
-    public Transform tf;
+    public E_Character e_Character;
+    [HideInInspector] public Transform tf;
     public Animator anim;
     protected virtual void Awake()
     {

@@ -10,19 +10,19 @@ public class Check_Ray_Cast : Singleton<Check_Ray_Cast>
     public LayerMask layerMasks_Plan_Blue;
     public LayerMask layerMasks_Player;
     public LayerMask layerMasks_Goal;
-    public bool isRay_Cast_Draw;
-    public bool isRay_Cast_Plan;
-    public bool isRay_Cast_Colider_Merge;
-    public bool isRay_Cast_Colider_Goal;
+    [HideInInspector] public bool isRay_Cast_Draw;
+    [HideInInspector] public bool isRay_Cast_Plan;
+    [HideInInspector] public bool isRay_Cast_Colider_Merge;
+    [HideInInspector] public bool isRay_Cast_Colider_Goal;
     public Camera cam;
     public Transform tf_Cam;
-    public Plane_Drawn_Arrow plane_Drawn_Arrow;
-    public Colider_Merge colider_Merge;
-    public Goal colider_Goal;
+    [HideInInspector] public Plane_Drawn_Arrow plane_Drawn_Arrow;
+    [HideInInspector] public Colider_Merge colider_Merge;
+    [HideInInspector] public Goal colider_Goal;
 
-    
 
-    public bool isHold_Mouse;
+
+    [HideInInspector] public bool isHold_Mouse;
     Vector3 pos_WorldMousePosition;
     
     //

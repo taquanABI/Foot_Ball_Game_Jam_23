@@ -53,7 +53,10 @@ public class UICanvas : MonoBehaviour
     public virtual void Open()
     {
         gameObject.SetActive(true);
-        m_RectTransform.SetAsLastSibling();
+        if (m_RectTransform != null)
+        {
+            m_RectTransform.SetAsLastSibling();
+        }
         //anim
     }
 
